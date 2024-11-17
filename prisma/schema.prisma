@@ -21,18 +21,17 @@ model User {
 }
 
 model Post {
-  id        String     @id @default(uuid())
+  id        String    @id @default(uuid())
   title     String
   content   String
   summary   String?
   imageUrl  String?
-  author    User       @relation("UserPosts", fields: [authorId], references: [id])
+  author    User      @relation("UserPosts", fields: [authorId], references: [id])
   authorId  String
-  comments  Comment[]  @relation("PostComments")
-  likes     Like[]     @relation("PostLikes")
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  status    PostStatus @default(DRAFT)
+  comments  Comment[] @relation("PostComments")
+  likes     Like[]    @relation("PostLikes")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Comment {
