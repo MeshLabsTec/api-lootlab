@@ -13,7 +13,7 @@ export async function loginUserController(
     const user = await makeCreateUser.execute(email, password);
 
     const token = await reply.jwtSign({ id: user.id, email: user.email });
-    console.log(token);
+
     return reply.status(200).send({ token });
   } catch (error) {
     if (error instanceof InvalidCredentialsError) {
