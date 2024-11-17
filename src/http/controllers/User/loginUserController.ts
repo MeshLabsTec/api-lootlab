@@ -1,0 +1,24 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
+import { makeLoginUserUseCase } from "@/useCases/@factories/User/makeLoginUserUseCase";
+import { InvalidCredentialsError } from "@/useCases/@erros/User/InvalidCredentialsError";
+
+export async function loginUserController(
+  req: FastifyRequest,
+  reply: FastifyReply,
+) {
+  const { email, password } = req.body as { email: string; password: string };
+
+  try {
+    const makeCreateUser = makeLoginUserUseCase();
+    const user = await makeCreateUser.execute(email, password);
+
+    const token = await reply.jwtSign({ id: user.id, email: user.email });
+    console.log(token);
+    return reply.status(200).send({ token });
+  } catch (error) {
+    if (error instanceof InvalidCredentialsError) {
+      return reply.status(401).send({ error: error.message });
+    }
+    return reply.status(500).send({ error: error.message });
+  }
+}

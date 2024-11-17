@@ -17,11 +17,17 @@
   "description": "",
   "dependencies": {
     "@prisma/client": "^5.22.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "fastify": "^5.1.0",
+    "fastify-jwt": "^4.2.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@fastify/jwt": "^5.0.1",
     "@rocketseat/eslint-config": "^2.2.2",
+    "@types/bcrypt": "^5.0.2",
+    "@types/fastify-jwt": "^0.8.3",
     "@types/node": "^22.9.0",
     "eslint": "^8.57.1",
     "prisma": "^5.22.0",
