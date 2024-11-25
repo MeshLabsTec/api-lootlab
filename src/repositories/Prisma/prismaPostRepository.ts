@@ -10,13 +10,28 @@ export class PrismaPostRepository implements IPostRepository {
 
   async findById(id: string) {
     const user = await prisma.post.findUnique({
-      where: { id },
+      where: {
+        id,
+      },
+      include: {
+        links: true,
+        ProjectFeatures: true,
+        LaunchInfo: true,
+        partnerships: true,
+      },
     });
     return user;
   }
 
   async findMany() {
-    const users = await prisma.post.findMany();
+    const users = await prisma.post.findMany({
+      include: {
+        links: true,
+        ProjectFeatures: true,
+        LaunchInfo: true,
+        partnerships: true,
+      },
+    });
     return users;
   }
 }

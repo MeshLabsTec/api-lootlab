@@ -21,18 +21,80 @@ model User {
 }
 
 model Post {
+  id                String            @id @default(uuid())
+  title             String            @db.VarChar(255)
+  market_link       String            @db.VarChar(255)
+  score             Int               @default(0)
+  investment        String            @db.VarChar(255)
+  token             String            @db.VarChar(255)
+  network           String            @db.VarChar(255)
+  comment_author    String            @db.VarChar(255)
+  author            User              @relation("UserPosts", fields: [authorId], references: [id])
+  authorId          String
+  launchInfoId      String?
+  projectFeaturesId String?
+  linkId            String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  comments          Comment[]         @relation("PostComments")
+  likes             Like[]            @relation("PostLikes")
+  links             Link[]            @relation("PostLinks")
+  partnerships      Partnership[]     @relation("PostPartnerships")
+  ProjectFeatures   ProjectFeatures[]
+  LaunchInfo        LaunchInfo[]
+}
+
+model ProjectFeatures {
+  id        String   @id @default(uuid())
+  title     String   @db.VarChar(255)
+  isFeature Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+}
+
+model Link {
   id        String    @id @default(uuid())
-  title     String
-  content   String
-  summary   String?
-  imageUrl  String?
-  author    User      @relation("UserPosts", fields: [authorId], references: [id])
-  authorId  String
-  comments  Comment[] @relation("PostComments")
-  likes     Like[]    @relation("PostLikes")
+  postId    String
+  url       String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  post Post @relation("PostLinks", fields: [postId], references: [id])
 }
+
+model LaunchInfo {
+  id             String @id @default(uuid())
+  launchDate     String @db.VarChar(255)
+  marketCap      Float
+  currentSupply  String @db.VarChar(255)
+  totalSupply    Int
+  privateSale    Float
+  privateSaleQty Int
+  publicSale     Float
+  publicSaleQty  Int
+  postId         String
+  post           Post   @relation(fields: [postId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Partnership {
+  id        String   @id @default(uuid())
+  name      String   @db.VarChar(255)
+  type      String   @db.VarChar(255)
+  link_url  String   @db.VarChar(255)
+  post      Post     @relation("PostPartnerships", fields: [postId], references: [id])
+  postId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 
 model Comment {
   id        String    @id @default(uuid())

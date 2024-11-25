@@ -1,32 +1,27 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { makeCreatePostUseCase } from "@/useCases/@factories/Post/makeCreatePostUseCase";
+import { z } from "zod";
 import { createPostSchema } from "./schemas/createPostSchema";
-import { PostNotFoundError } from "@/useCases/@erros/Post/PostNotFoundError";
+import type { ICreatePost } from "@/useCases/interfaces/ICreatePost";
 
 export async function createPostController(
   req: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const { title, content, summary, imageUrl } = createPostSchema.parse(
-    req.body,
-  );
-  console.log(req.user);
-  const { id: authorId } = req.user as { id: string };
   try {
-    const makeCreatePost = makeCreatePostUseCase();
-    const post = await makeCreatePost.execute({
-      title,
-      content,
-      summary,
-      imageUrl,
-      authorId,
-    });
+    const validatedData = createPostSchema.parse(req.body) as ICreatePost;
 
-    return reply.status(201).send(post);
+    const makeCreatePost = makeCreatePostUseCase();
+    const post = await makeCreatePost.execute(validatedData);
+
+    return reply.code(201).send(post);
   } catch (error) {
-    if (error instanceof PostNotFoundError) {
-      return reply.status(404).send({ error: error.message });
+    if (error instanceof z.ZodError) {
+      console.error("Erro de validação:", error.errors);
+      return reply.code(400).send({ error: error.errors });
     }
-    return reply.status(500).send({ error: error.message });
+    return reply
+      .code(500)
+      .send({ error: "Erro interno", message: error.message });
   }
 }
