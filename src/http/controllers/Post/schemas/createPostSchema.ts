@@ -22,15 +22,9 @@ const LaunchInfoSchema = z.object({
   privateSale: z
     .number()
     .nonnegative("O valor da venda privada deve ser positivo"),
-  privateSaleQty: z
-    .number()
-    .nonnegative("A quantidade da venda privada deve ser positiva"),
   publicSale: z
     .number()
     .nonnegative("O valor da venda pública deve ser positivo"),
-  publicSaleQty: z
-    .number()
-    .nonnegative("A quantidade da venda pública deve ser positiva"),
 });
 
 // Esquema para validação de Partnership
@@ -49,7 +43,7 @@ export const createPostSchema = z.object({
   token: z.string().min(1, "O token é obrigatório"),
   network: z.string().min(1, "A rede é obrigatória"),
   authorId: z.string().min(1, "O ID do autor é obrigatório"),
-  comment_author: z.string().min(1, "O autor do comentário é obrigatório"),
+  comment_author: z.string().min(1, "O comentário do autor é obrigatório"),
   links: z.array(LinkSchema).optional(),
   projectFeatures: z.array(ProjectFeatureSchema).optional(),
   launchInfo: LaunchInfoSchema,
