@@ -19,7 +19,6 @@ interface LaunchInfo {
 }
 
 interface IPartnership {
-  name: string;
   type: string;
   link_url: string;
 }

@@ -83,7 +83,6 @@ model LaunchInfo {
 
 model Partnership {
   id        String   @id @default(uuid())
-  name      String?  @db.VarChar(255)
   type      String?  @db.VarChar(255)
   link_url  String   @db.VarChar(255)
   post      Post     @relation("PostPartnerships", fields: [postId], references: [id])
