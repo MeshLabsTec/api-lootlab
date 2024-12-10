@@ -81,17 +81,15 @@ export async function createPostController(
 
     await makeCreatePost.execute(postData);
 
-    return {
-      message: "Post criado com sucesso",
-    };
+    return reply.status(201).send({ message: "Post criado com sucesso." });
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Erro de validação:", error.errors);
-      return reply.code(400).send({ error: error.errors });
+      return reply.status(400).send({ error: error.errors });
     }
     console.error("Erro interno:", error);
     return reply
-      .code(500)
+      .status(500)
       .send({ error: "Erro interno", message: error.message });
   }
 }
