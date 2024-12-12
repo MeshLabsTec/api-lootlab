@@ -30,7 +30,6 @@ export class CreatePostUseCase {
     );
 
     const connectGenres = existingGenres.map((genre) => ({ id: genre.id }));
-
     const createGenres = newGenres.map((genre) => ({ name: genre.name }));
 
     const randow = Math.floor(Math.random() * 1000000);

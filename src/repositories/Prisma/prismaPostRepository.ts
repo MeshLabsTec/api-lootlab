@@ -9,7 +9,7 @@ export class PrismaPostRepository implements IPostRepository {
   }
 
   async findById(id: string) {
-    const user = await prisma.post.findUnique({
+    const post = await prisma.post.findUnique({
       where: {
         id,
       },
@@ -20,13 +20,14 @@ export class PrismaPostRepository implements IPostRepository {
         partnerships: true,
         Image: true,
         genres: true,
+        author: true,
       },
     });
-    return user;
+    return post;
   }
 
   async findMany() {
-    const users = await prisma.post.findMany({
+    const posts = await prisma.post.findMany({
       include: {
         links: true,
         ProjectFeatures: true,
@@ -36,6 +37,6 @@ export class PrismaPostRepository implements IPostRepository {
         genres: true,
       },
     });
-    return users;
+    return posts;
   }
 }

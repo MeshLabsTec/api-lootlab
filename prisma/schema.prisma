@@ -29,7 +29,6 @@ model Post {
   token             String            @db.VarChar(255)
   network           String            @db.VarChar(255)
   comment_author    String            @db.VarChar(255)
-  author            User              @relation("UserPosts", fields: [authorId], references: [id])
   authorId          String
   launchInfoId      String?
   projectFeaturesId String?
@@ -44,6 +43,7 @@ model Post {
   LaunchInfo        LaunchInfo[]
   Image             Image[]
   genres            Genre[]           @relation("PostGenres")
+  author            User              @relation("UserPosts", fields: [authorId], references: [id])
 }
 
 model Genre {
