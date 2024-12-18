@@ -5,4 +5,5 @@ export interface IPostRepository {
   findById(id: string): Promise<Post | null>;
   findBySlug(slug: string): Promise<Post | null>;
   findMany(): Promise<Post[]>;
+  updateById(id: string, data: Prisma.PostUncheckedUpdateInput): Promise<Post>;
 }

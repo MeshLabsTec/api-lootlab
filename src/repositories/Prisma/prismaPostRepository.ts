@@ -57,4 +57,14 @@ export class PrismaPostRepository implements IPostRepository {
     });
     return posts;
   }
+
+  async updateById(id: string, data: Prisma.PostUncheckedUpdateInput) {
+    const post = await prisma.post.update({
+      where: {
+        id,
+      },
+      data,
+    });
+    return post;
+  }
 }
