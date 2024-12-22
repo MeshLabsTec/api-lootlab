@@ -11,7 +11,6 @@ export async function createPostController(
 ) {
   try {
     const data = await req.file();
-
     if (!data) {
       return reply.code(400).send({
         error: "FileMissing",
@@ -20,7 +19,6 @@ export async function createPostController(
     }
 
     const fields = (data as any).fields || {};
-
     const buffer = await data.toBuffer();
 
     let jsonDate;

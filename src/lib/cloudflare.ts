@@ -1,5 +1,9 @@
 import { env } from "@/env";
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from "@aws-sdk/client-s3";
 
 export const r2 = new S3Client({
   region: "auto",
@@ -49,5 +53,23 @@ export async function uploadImageToR2(
   } catch (error) {
     console.error("Erro ao fazer upload para o R2:", error);
     throw new Error("Erro ao fazer upload da imagem: " + error.message);
+  }
+}
+
+export async function deleteImageFromR2(url: string): Promise<void> {
+  try {
+    const key = url.replace(`${env.CLOUDFLARE_PUBLIC_ENDPOINT}/`, "");
+
+    await r2.send(
+      new DeleteObjectCommand({
+        Bucket: env.CLOUDFLARE_BUCKET_NAME,
+        Key: key,
+      }),
+    );
+
+    console.log("Imagem deletada com sucesso:", url);
+  } catch (error) {
+    console.error("Erro ao deletar imagem do R2:", error);
+    throw new Error("Erro ao deletar imagem: " + error.message);
   }
 }
