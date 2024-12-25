@@ -22,7 +22,10 @@ interface UpdatePostDTO {
   comment_author?: string;
   slug?: string;
   authorId?: string;
-  genres?: string[];
+  genres?: Array<{
+    id: string;
+    name: string;
+  }>;
   launchInfo?: UpdateLaunchInfoDTO;
   projectFeatures?: Array<{
     id: string;
@@ -81,15 +84,14 @@ export class PostUpdateUseCase {
 
         // 2. Atualiza os gêneros se fornecidos
         if (genres) {
-          await tx.post.update({
-            where: { id },
-            data: {
-              genres: {
-                set: [], // Remove todos os gêneros existentes
-                connect: genres.map((genreId) => ({ id: genreId })),
+          for (const genre of genres) {
+            await tx.genre.update({
+              where: { id: genre.id },
+              data: {
+                name: genre.name,
               },
-            },
-          });
+            });
+          }
         }
 
         // 3. Atualiza LaunchInfo existente

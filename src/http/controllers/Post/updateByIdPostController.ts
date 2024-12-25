@@ -20,7 +20,10 @@ interface UpdatePostDTO {
   comment_author?: string;
   slug?: string;
   authorId?: string;
-  genres?: string[];
+  genres?: Array<{
+    id: string;
+    name: string;
+  }>;
   launchInfo?: {
     launchDate?: string;
     marketCap?: number;
