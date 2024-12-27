@@ -45,5 +45,5 @@ export const createPostSchema = z.object({
   links: z.array(LinkSchema).optional(),
   projectFeatures: z.array(ProjectFeatureSchema).optional(),
   launchInfo: LaunchInfoSchema,
-  partnership: z.array(PartnershipSchema).optional(),
+  partnerships: z.array(PartnershipSchema).optional(),
 });

@@ -5,6 +5,7 @@ import type { Prisma } from "@prisma/client";
 import type { IUserRepository } from "@/repositories/interfaceRepository/IUserRepository";
 import type { IGenreRepository } from "@/repositories/interfaceRepository/IGenreRepository";
 import { generateSlug } from "@/utils/generateSlug";
+import { UserNotFoundError } from "../@erros/User/UserNotFoundError";
 
 export class CreatePostUseCase {
   constructor(
@@ -17,7 +18,7 @@ export class CreatePostUseCase {
     const user = await this.userRepository.findById(data.authorId);
 
     if (!user) {
-      throw new Error("Usuário não encontrado");
+      throw new UserNotFoundError();
     }
 
     const genres = await this.genreRepository.findMany();

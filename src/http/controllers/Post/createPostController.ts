@@ -4,6 +4,7 @@ import { makeCreatePostUseCase } from "@/useCases/@factories/Post/makeCreatePost
 import { z } from "zod";
 import { createPostSchema } from "./schemas/createPostSchema";
 import type { ICreatePost } from "@/useCases/interfaces/ICreatePost";
+import { UserNotFoundError } from "@/useCases/@erros/User/UserNotFoundError";
 
 export async function createPostController(
   req: FastifyRequest,
@@ -71,7 +72,7 @@ export async function createPostController(
         }),
       ),
 
-      partnership: validateSchema.partnership.map(
+      partnership: validateSchema.partnerships.map(
         (partner: { type?: string; link_url?: string }) => ({
           type: partner.type,
           link_url: partner.link_url,
@@ -85,7 +86,9 @@ export async function createPostController(
   } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("Erro de validação:", error.errors);
-      return reply.status(400).send({ error: error.errors });
+      return reply.status(400).send({ message: error.errors });
+    } else if (error instanceof UserNotFoundError) {
+      return reply.status(404).send({ message: error.message });
     }
     return reply
       .status(500)
