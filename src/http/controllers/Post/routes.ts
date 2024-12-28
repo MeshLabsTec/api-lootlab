@@ -1,17 +1,64 @@
-import type { FastifyInstance } from "fastify/types/instance";
 import { createPostController } from "./createPostController";
 import { findManyPostsController } from "./findManyPostController";
 import { findByIdPostController } from "./findByIdPostController";
 import { validateJWT } from "@/http/middleware/validateJWT";
 import { findBySlugPostController } from "./findBySlugController";
 import { updateByIdPostController } from "./updateByIdPostController";
+import type { FastifyTypedInstance } from "@/types";
 
-export function postRouter(app: FastifyInstance) {
-  app.post("/v1/post", { preHandler: [validateJWT] }, createPostController);
+export function postRouter(app: FastifyTypedInstance) {
+  app.post(
+    "/v1/post",
+    {
+      preHandler: [validateJWT],
+      schema: {
+        description: "Create a post",
+        tags: ["Post"],
+      },
+    },
+    createPostController,
+  );
   // GET
-  app.get("/v1/post/:id", findByIdPostController);
-  app.get("/v1/post/slug/:slug", findBySlugPostController);
-  app.get("/v1/post", findManyPostsController);
+  app.get(
+    "/v1/post/:id",
+    {
+      schema: {
+        description: "Find a post by id",
+        tags: ["Post"],
+      },
+    },
+    findByIdPostController,
+  );
+  app.get(
+    "/v1/post",
+    {
+      schema: {
+        description: "Find many posts",
+        tags: ["Post"],
+      },
+    },
+    findManyPostsController,
+  );
+  app.get(
+    "/v1/post/slug/:slug",
+    {
+      schema: {
+        description: "Find a post by slug",
+        tags: ["Post"],
+      },
+    },
+    findBySlugPostController,
+  );
   // PUT
-  app.put("/v1/post/:id", updateByIdPostController);
+  app.put(
+    "/v1/post/:id",
+    {
+      preHandler: [validateJWT],
+      schema: {
+        description: "Update a post by id",
+        tags: ["Post"],
+      },
+    },
+    updateByIdPostController,
+  );
 }

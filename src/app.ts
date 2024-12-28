@@ -5,11 +5,36 @@ import { env } from "./env";
 import { postRouter } from "./http/controllers/Post/routes";
 import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
+import type { ZodTypeProvider } from "fastify-type-provider-zod";
+import {
+  validatorCompiler,
+  serializerCompiler,
+  jsonSchemaTransform,
+} from "fastify-type-provider-zod";
+import fastifySwagger from "@fastify/swagger";
+import fastifySwaggerUi from "@fastify/swagger-ui";
 
-export const app = fastify();
+export const app = fastify().withTypeProvider<ZodTypeProvider>();
+
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
   origin: "*",
+});
+
+app.register(fastifySwagger, {
+  openapi: {
+    info: {
+      title: "API",
+      version: "1.0.0",
+    },
+  },
+  transform: jsonSchemaTransform,
+});
+
+app.register(fastifySwaggerUi, {
+  routePrefix: "/docs",
 });
 
 app.register(jwt, {
