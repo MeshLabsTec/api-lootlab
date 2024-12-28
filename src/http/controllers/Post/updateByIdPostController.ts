@@ -106,7 +106,6 @@ export async function updateByIdPostController(
               file.mimetype,
             );
 
-            // Verifique se imageUrl é válida
             if (!imageUrl) {
               throw new Error("Failed to upload image");
             }
@@ -115,7 +114,6 @@ export async function updateByIdPostController(
           }),
         );
 
-        // Só atribua ao postData se houver imagens válidas
         if (uploadedImages.length > 0) {
           postData.Image = uploadedImages;
         }
@@ -129,10 +127,8 @@ export async function updateByIdPostController(
       }
     }
 
-    // Remove o campo files antes de enviar para o useCase
     const cleanPostData = postData;
 
-    // Executar o caso de uso
     const updatePost = makeUpdateByIdPostUseCase();
     console.log("Enviando para useCase:", { id, postData: cleanPostData });
     const updatedPost = await updatePost.execute(id, cleanPostData);

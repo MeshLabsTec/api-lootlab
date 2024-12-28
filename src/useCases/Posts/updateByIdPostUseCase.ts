@@ -126,7 +126,6 @@ export class PostUpdateUseCase {
             });
           }
         }
-
         // 6. Atualiza Partnerships existentes
         if (partnerships) {
           for (const partnership of partnerships) {
@@ -140,7 +139,6 @@ export class PostUpdateUseCase {
           }
         }
 
-        // 7. Atualiza Images existentes
         if (Image?.length && Image.every((img) => img.url)) {
           try {
             await Promise.all(
