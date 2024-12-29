@@ -9,4 +9,5 @@ export interface IPostRepository {
     id: string,
     data: Prisma.PostUncheckedUpdateManyInput,
   ): Promise<Post>;
+  deleteById(id: string): Promise<Post>;
 }

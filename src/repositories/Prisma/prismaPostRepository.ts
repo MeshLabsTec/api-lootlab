@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import type { Prisma } from "@prisma/client";
+import type { Post, Prisma } from "@prisma/client";
 import type { IPostRepository } from "../interfaceRepository/IPostRepository";
 
 export class PrismaPostRepository implements IPostRepository {
@@ -64,6 +64,25 @@ export class PrismaPostRepository implements IPostRepository {
         id,
       },
       data,
+    });
+    return post;
+  }
+
+  async deleteById(id: string): Promise<Post> {
+    const post = await prisma.post.delete({
+      where: {
+        id,
+      },
+      include: {
+        links: true,
+        ProjectFeatures: true,
+        launchInfo: true,
+        partnerships: true,
+        Image: true,
+        genres: true,
+        likes: true,
+        comments: true,
+      },
     });
     return post;
   }

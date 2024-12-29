@@ -21,7 +21,6 @@ export async function createPostController(
 
     const fields = (data as any).fields || {};
     const buffer = await data.toBuffer();
-
     let jsonDate;
     try {
       jsonDate = JSON.parse(fields.postData.value);
@@ -29,6 +28,8 @@ export async function createPostController(
       return reply.code(400).send({
         error: "InvalidPostData",
         message: "O campo 'postData' não contém um JSON válido.",
+        receivedValue: fields.postData.value,
+        parseError: e.message,
       });
     }
 
@@ -46,15 +47,17 @@ export async function createPostController(
       token: validateSchema.token,
       network: validateSchema.network,
       comment_author: validateSchema.comment_author,
-      links: validateSchema.links.map((link: { url?: string }) => ({
-        url: link.url,
-      })),
-      projectFeatures: validateSchema.projectFeatures.map(
-        (feature: { title: string; isFeature?: boolean }) => ({
-          title: feature.title,
-          isFeature: feature.isFeature || false,
-        }),
-      ),
+      links:
+        validateSchema.links?.map((link: { url?: string }) => ({
+          url: link.url,
+        })) || [],
+      projectFeatures:
+        validateSchema.projectFeatures?.map(
+          (feature: { title: string; isFeature?: boolean }) => ({
+            title: feature.title,
+            isFeature: feature.isFeature || false,
+          }),
+        ) || [],
       launchInfo: {
         ...validateSchema.launchInfo,
         launchDate: validateSchema.launchInfo.launchDate || "",
@@ -71,16 +74,17 @@ export async function createPostController(
         }),
       ),
 
-      partnership: validateSchema.partnerships.map(
-        (partner: { type?: string; link_url?: string }) => ({
-          type: partner.type,
-          link_url: partner.link_url,
-        }),
-      ),
+      partnerships:
+        validateSchema.partnerships?.map(
+          (partner: { type?: string; link_url?: string }) => ({
+            type: partner.type,
+            link_url: partner.link_url,
+          }),
+        ) || [],
     };
-
-    await makeCreatePost.execute(postData);
-
+    console.log(postData);
+    const response = await makeCreatePost.execute(postData);
+    console.log(response);
     return reply.status(201).send({ message: "Post criado com sucesso." });
   } catch (error) {
     if (error instanceof z.ZodError) {

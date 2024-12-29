@@ -5,16 +5,13 @@ import { validateJWT } from "@/http/middleware/validateJWT";
 import { findBySlugPostController } from "./findBySlugController";
 import { updateByIdPostController } from "./updateByIdPostController";
 import type { FastifyTypedInstance } from "@/types";
+import { deleteByIdPostController } from "./deleteByIdPostController";
 
 export function postRouter(app: FastifyTypedInstance) {
   app.post(
     "/v1/post",
     {
       preHandler: [validateJWT],
-      schema: {
-        description: "Create a post",
-        tags: ["Post"],
-      },
     },
     createPostController,
   );
@@ -61,4 +58,7 @@ export function postRouter(app: FastifyTypedInstance) {
     },
     updateByIdPostController,
   );
+
+  // DELETE
+  app.delete("/v1/post/:id", deleteByIdPostController);
 }

@@ -38,7 +38,7 @@ export interface ICreatePost {
   links: Link[];
   projectFeatures: IProjectFeatures[];
   launchInfo: LaunchInfo;
-  partnership: IPartnership[];
+  partnerships: IPartnership[];
   genres: IGenre[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   images: any;
