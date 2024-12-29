@@ -11,7 +11,11 @@ export function postRouter(app: FastifyTypedInstance) {
   app.post(
     "/v1/post",
     {
-      preHandler: [validateJWT],
+      preHandler: [
+        validateJWT({
+          allowedRoles: ["ADMIN", "WRITER"],
+        }),
+      ],
     },
     createPostController,
   );
@@ -50,7 +54,11 @@ export function postRouter(app: FastifyTypedInstance) {
   app.put(
     "/v1/post/:id",
     {
-      preHandler: [validateJWT],
+      preHandler: [
+        validateJWT({
+          allowedRoles: ["ADMIN", "WRITER"],
+        }),
+      ],
       schema: {
         description: "Update a post by id",
         tags: ["Post"],
@@ -60,5 +68,15 @@ export function postRouter(app: FastifyTypedInstance) {
   );
 
   // DELETE
-  app.delete("/v1/post/:id", deleteByIdPostController);
+  app.delete(
+    "/v1/post/:id",
+    {
+      preHandler: [
+        validateJWT({
+          allowedRoles: ["ADMIN"],
+        }),
+      ],
+    },
+    deleteByIdPostController,
+  );
 }

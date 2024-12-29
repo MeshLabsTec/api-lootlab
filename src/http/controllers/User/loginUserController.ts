@@ -12,12 +12,17 @@ export async function loginUserController(
     const makeCreateUser = makeLoginUserUseCase();
     const user = await makeCreateUser.execute(email, password);
 
-    const token = await reply.jwtSign({ id: user.id, email: user.email });
+    const token = await reply.jwtSign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     return reply.status(200).send({
       user: {
         id: user.id,
         email: user.email,
+        role: user.role,
       },
       token,
     });

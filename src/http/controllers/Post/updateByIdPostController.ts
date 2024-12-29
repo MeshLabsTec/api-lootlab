@@ -57,7 +57,8 @@ export async function updateByIdPostController(
 ) {
   try {
     const { id } = req.params as { id: string };
-
+    const user = req.user;
+    console.log(user);
     const parts = req.parts();
     let postData: UpdatePostDTO | null = null;
     const imageFiles: MultipartFile[] = [];

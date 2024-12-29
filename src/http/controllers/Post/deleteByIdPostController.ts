@@ -10,9 +10,11 @@ export async function deleteByIdPostController(
     const { id } = req.params as { id: string };
 
     const makeFindManyPosts = makeDeleteByIdPostUseCase();
-    const posts = await makeFindManyPosts.execute(id);
+    await makeFindManyPosts.execute(id);
 
-    return reply.status(200).send(posts);
+    return reply.status(200).send({
+      message: "Post deletado com sucesso",
+    });
   } catch (error) {
     if (error instanceof PostNotFoundError) {
       return reply.status(404).send({ message: error.message });
