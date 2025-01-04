@@ -66,8 +66,8 @@ export class CreatePostUseCase {
         ? { create: data.projectFeatures }
         : undefined,
       launchInfo: data.launchInfo ? { create: data.launchInfo } : undefined,
-      partnerships: data.partnership?.length
-        ? { create: data.partnership }
+      partnerships: data.partnerships?.length
+        ? { create: data.partnerships }
         : undefined,
       Image: images ? { create: images } : undefined,
       genres: {
