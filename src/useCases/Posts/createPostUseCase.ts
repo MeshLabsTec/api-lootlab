@@ -6,6 +6,7 @@ import type { IUserRepository } from "@/repositories/interfaceRepository/IUserRe
 import type { IGenreRepository } from "@/repositories/interfaceRepository/IGenreRepository";
 import { generateSlug } from "@/utils/generateSlug";
 import { UserNotFoundError } from "../@erros/User/UserNotFoundError";
+import { TitleAlreadyExistError } from "../@erros/Post/TitleAlreadyExistError";
 
 export class CreatePostUseCase {
   constructor(
@@ -19,6 +20,12 @@ export class CreatePostUseCase {
 
     if (!user) {
       throw new UserNotFoundError();
+    }
+
+    const postByTitle = await this.postRepository.findByTitle(data.title);
+
+    if (postByTitle) {
+      throw new TitleAlreadyExistError();
     }
 
     const genres = await this.genreRepository.findMany();

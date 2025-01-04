@@ -26,6 +26,24 @@ export class PrismaPostRepository implements IPostRepository {
     return post;
   }
 
+  async findByTitle(title: string) {
+    const post = await prisma.post.findUnique({
+      where: {
+        title,
+      },
+      include: {
+        links: true,
+        ProjectFeatures: true,
+        launchInfo: true,
+        partnerships: true,
+        Image: true,
+        genres: true,
+        author: true,
+      },
+    });
+    return post;
+  }
+
   async findBySlug(slug: string) {
     const post = await prisma.post.findUnique({
       where: {
