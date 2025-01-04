@@ -83,9 +83,7 @@ export async function createPostController(
           }),
         ) || [],
     };
-    console.log(postData);
-    const response = await makeCreatePost.execute(postData);
-    console.log(response);
+    await makeCreatePost.execute(postData);
     return reply.status(201).send({ message: "Post criado com sucesso." });
   } catch (error) {
     if (error instanceof z.ZodError) {
