@@ -14,6 +14,7 @@ export class PostUpdateUseCase {
         where: { id },
         include: {
           Image: true,
+          launchInfo: true,
         },
       });
 
@@ -33,7 +34,6 @@ export class PostUpdateUseCase {
       } = data || {};
 
       return await this.prisma.$transaction(async (tx) => {
-        // 1. Atualiza o post principal
         const postUpdateData = {
           ...postData,
           ...(postData.title && { slug: generateSlug(postData.title) }),
@@ -53,7 +53,6 @@ export class PostUpdateUseCase {
           data: postUpdateData,
         });
 
-        // 2. Atualiza ou cria gêneros
         if (genres) {
           for (const genre of genres) {
             if (genre.id) {
@@ -76,15 +75,24 @@ export class PostUpdateUseCase {
           }
         }
 
-        // 3. Atualiza LaunchInfo existente
         if (launchInfo) {
-          await tx.launchInfo.update({
-            where: { postId: id },
-            data: launchInfo,
-          });
+          if (post.launchInfo) {
+            await tx.launchInfo.update({
+              where: { postId: id },
+              data: launchInfo,
+            });
+          } else {
+            await tx.launchInfo.create({
+              data: {
+                ...launchInfo,
+                post: {
+                  connect: { id },
+                },
+              },
+            });
+          }
         }
 
-        // 4. Atualiza ou cria ProjectFeatures
         if (projectFeatures) {
           for (const feature of projectFeatures) {
             if (feature.id) {
@@ -95,7 +103,7 @@ export class PostUpdateUseCase {
                   isFeature: feature.isFeature,
                 },
               });
-            } else if (feature.title) {
+            } else {
               await tx.projectFeatures.create({
                 data: {
                   title: feature.title,
@@ -109,7 +117,6 @@ export class PostUpdateUseCase {
           }
         }
 
-        // 5. Atualiza ou cria Links
         if (links) {
           for (const link of links) {
             if (link.id) {
@@ -132,7 +139,6 @@ export class PostUpdateUseCase {
           }
         }
 
-        // 6. Atualiza ou cria Partnerships
         if (partnerships) {
           for (const partnership of partnerships) {
             if (partnership.id) {
@@ -157,13 +163,15 @@ export class PostUpdateUseCase {
           }
         }
 
-        if (Image?.length && Image.every((img) => img.url)) {
+        if (Image?.length) {
           try {
-            await Promise.all(
-              post.Image.map(async (oldImage) => {
-                await deleteImageFromR2(oldImage.url);
-              }),
-            );
+            if (post.Image.length > 0) {
+              await Promise.all(
+                post.Image.map(async (oldImage) => {
+                  await deleteImageFromR2(oldImage.url);
+                }),
+              );
+            }
 
             await tx.post.update({
               where: { id },
@@ -181,7 +189,6 @@ export class PostUpdateUseCase {
           }
         }
 
-        // Retorna o post atualizado com todas as relações
         return await tx.post.findUnique({
           where: { id },
           include: {

@@ -5,7 +5,6 @@ import type { Prisma } from "@prisma/client";
 import type { IUserRepository } from "@/repositories/interfaceRepository/IUserRepository";
 import type { IGenreRepository } from "@/repositories/interfaceRepository/IGenreRepository";
 import { generateSlug } from "@/utils/generateSlug";
-import { UserNotFoundError } from "../@erros/User/UserNotFoundError";
 import { TitleAlreadyExistError } from "../@erros/Post/TitleAlreadyExistError";
 
 export class CreatePostUseCase {
@@ -16,58 +15,65 @@ export class CreatePostUseCase {
   ) {}
 
   async execute(data: ICreatePost) {
-    const user = await this.userRepository.findById(data.authorId);
-
-    if (!user) {
-      throw new UserNotFoundError();
-    }
-
+    // Verificar se o título já existe
     const postByTitle = await this.postRepository.findByTitle(data.title);
-
     if (postByTitle) {
       throw new TitleAlreadyExistError();
     }
 
-    const genres = await this.genreRepository.findMany();
+    // Processar gêneros apenas se fornecidos
+    let genreRelations;
+    if (data.genres?.length) {
+      const genres = await this.genreRepository.findMany();
 
-    const existingGenres = genres.filter((genre) =>
-      data.genres.some((dateGenres) => dateGenres.name === genre.name),
-    );
+      const existingGenres = genres.filter((genre) =>
+        data.genres?.some((dateGenres) => dateGenres.name === genre.name),
+      );
 
-    const newGenres = data.genres.filter(
-      (dateGenres) => !genres.some((genre) => genre.name === dateGenres.name),
-    );
+      const newGenres = data.genres.filter(
+        (dateGenres) => !genres.some((genre) => genre.name === dateGenres.name),
+      );
 
-    const connectGenres = existingGenres.map((genre) => ({ id: genre.id }));
-    const createGenres = newGenres.map((genre) => ({ name: genre.name }));
+      const connectGenres = existingGenres.map((genre) => ({ id: genre.id }));
+      const createGenres = newGenres.map((genre) => ({ name: genre.name }));
 
-    const randow = Math.floor(Math.random() * 1000000);
+      genreRelations = {
+        connect: connectGenres.length > 0 ? connectGenres : undefined,
+        create: createGenres.length > 0 ? createGenres : undefined,
+      };
+    }
 
-    const images = data.images
-      ? await Promise.all(
-          data.images.map(async (imageBuffer) => {
-            const uniqueKey = `post-${randow}`;
-            try {
-              const signedUrl = await uploadImageToR2(imageBuffer, uniqueKey);
-              return { url: signedUrl };
-            } catch (error) {
-              throw new Error("Erro ao fazer upload da imagem");
-            }
-          }),
-        )
-      : undefined;
+    // Processar imagens apenas se fornecidas
+    let images;
+    if (data.images?.length) {
+      const randow = Math.floor(Math.random() * 1000000);
+      images = await Promise.all(
+        data.images.map(async (imageBuffer) => {
+          const uniqueKey = `post-${randow}`;
+          try {
+            const signedUrl = await uploadImageToR2(imageBuffer, uniqueKey);
+            return { url: signedUrl };
+          } catch (error) {
+            throw new Error("Erro ao fazer upload da imagem");
+          }
+        }),
+      );
+    }
 
+    // Criar o post com campos opcionais
     const slug = generateSlug(data.title);
     const createPostInput: Prisma.PostUncheckedCreateInput = {
       title: data.title,
+      slug,
+      // Campos opcionais
+      authorId: data.authorId,
       market_link: data.market_link,
       score: data.score,
       investment: data.investment,
       token: data.token,
       network: data.network,
       comment_author: data.comment_author,
-      authorId: data.authorId,
-      slug,
+      // Relações opcionais
       links: data.links?.length ? { create: data.links } : undefined,
       ProjectFeatures: data.projectFeatures?.length
         ? { create: data.projectFeatures }
@@ -77,14 +83,10 @@ export class CreatePostUseCase {
         ? { create: data.partnerships }
         : undefined,
       Image: images ? { create: images } : undefined,
-      genres: {
-        connect: connectGenres.length > 0 ? connectGenres : undefined,
-        create: createGenres.length > 0 ? createGenres : undefined,
-      },
+      genres: genreRelations,
     };
 
     const post = await this.postRepository.create(createPostInput);
-
     return post;
   }
 }

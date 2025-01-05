@@ -1,49 +1,47 @@
 import { z } from "zod";
 
-// Esquema para validação de um Link
 const LinkSchema = z.object({
-  url: z.string().url("URL inválida"),
+  url: z.string().url("URL inválida").optional(),
 });
 
-// Esquema para validação de ProjectFeatures
 const ProjectFeatureSchema = z.object({
-  title: z.string().min(1, "O título da feature é obrigatório"),
-  isFeature: z.boolean(),
+  title: z.string().min(1, "O título da feature é obrigatório").optional(),
+  isFeature: z.boolean().optional(),
 });
 
-// Esquema para validação de LaunchInfo
 const LaunchInfoSchema = z.object({
-  launchDate: z.string().min(1, "A data de lançamento é obrigatória"),
-  marketCap: z.number(),
-  currentSupply: z.string().min(1, "A oferta atual é obrigatória"),
-  totalSupply: z.number(),
-  privateSale: z.number(),
-  publicSale: z.number(),
+  launchDate: z.string().optional(),
+  marketCap: z.number().optional(),
+  currentSupply: z.string().optional(),
+  totalSupply: z.number().optional(),
+  privateSale: z.number().optional(),
+  publicSale: z.number().optional(),
 });
 
-// Esquema para validação de Partnership
 const PartnershipSchema = z.object({
-  type: z.string().min(1, "O tipo da parceria é obrigatório").optional(),
-  link_url: z.string().url("URL da parceria inválida"),
+  type: z.string().optional(),
+  link_url: z.string().url("URL da parceria inválida").optional(),
 });
 
 const Genre = z.object({
-  name: z.string(),
+  name: z.string().optional(),
 });
 
-// Esquema principal para validação do Post
 export const createPostSchema = z.object({
   title: z.string().min(1, "O título é obrigatório"),
-  market_link: z.string().url("URL de mercado inválida"),
+
+  market_link: z.string().url("URL de mercado inválida").optional(),
   score: z.number().optional(),
   investment: z.string().optional(),
-  token: z.string().min(1, "O token é obrigatório"),
-  network: z.string().min(1, "A rede é obrigatória"),
-  comment_author: z.string().min(1, "O comentário do autor é obrigatório"),
-  authorId: z.string().min(1, "O ID do autor é obrigatório"),
-  genres: z.array(Genre),
+  token: z.string().optional(),
+  network: z.string().optional(),
+  comment_author: z.string().optional(),
+  authorId: z.string().optional(),
+
+  // Arrays e objetos opcionais
+  genres: z.array(Genre).optional(),
   links: z.array(LinkSchema).optional(),
   projectFeatures: z.array(ProjectFeatureSchema).optional(),
-  launchInfo: LaunchInfoSchema,
+  launchInfo: LaunchInfoSchema.optional(),
   partnerships: z.array(PartnershipSchema).optional(),
 });
