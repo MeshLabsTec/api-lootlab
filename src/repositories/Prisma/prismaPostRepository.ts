@@ -63,8 +63,11 @@ export class PrismaPostRepository implements IPostRepository {
     return post;
   }
 
-  async findMany() {
+  async findMany(category?: string) {
+    const where = category ? { category } : undefined;
+
     const posts = await prisma.post.findMany({
+      where,
       include: {
         links: true,
         ProjectFeatures: true,

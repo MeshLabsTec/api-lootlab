@@ -54,8 +54,18 @@ export async function uploadImageToR2(
   }
 }
 
-export async function deleteImageFromR2(url: string): Promise<void> {
+export async function deleteImageFromR2(url?: string): Promise<void> {
+  // Se não houver URL, retorna sem fazer nada
+  if (!url) {
+    return;
+  }
+
   try {
+    // Verifica se a URL contém o endpoint público do Cloudflare
+    if (!url.includes(env.CLOUDFLARE_PUBLIC_ENDPOINT)) {
+      return;
+    }
+
     const key = url.replace(`${env.CLOUDFLARE_PUBLIC_ENDPOINT}/`, "");
 
     await r2.send(
@@ -65,6 +75,8 @@ export async function deleteImageFromR2(url: string): Promise<void> {
       }),
     );
   } catch (error) {
-    throw new Error("Erro ao deletar imagem: " + error.message);
+    // Tipagem explícita do erro
+    const err = error as Error;
+    throw new Error("Erro ao deletar imagem: " + err.message);
   }
 }

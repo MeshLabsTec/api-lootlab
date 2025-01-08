@@ -3,8 +3,8 @@ import type { IPostRepository } from "@/repositories/interfaceRepository/IPostRe
 export class FindManyPostUseCase {
   constructor(private userRepository: IPostRepository) {}
 
-  async execute() {
-    const user = await this.userRepository.findMany();
+  async execute(category?: string) {
+    const user = await this.userRepository.findMany(category);
     return user;
   }
 }

@@ -39,7 +39,7 @@ export const createPostSchema = z.object({
   authorId: z.string().optional(),
 
   // Arrays e objetos opcionais
-  genres: z.array(Genre).optional(),
+  genres: z.array(Genre),
   links: z.array(LinkSchema).optional(),
   projectFeatures: z.array(ProjectFeatureSchema).optional(),
   launchInfo: LaunchInfoSchema.optional(),

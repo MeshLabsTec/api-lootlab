@@ -6,8 +6,10 @@ export async function findManyPostsController(
   reply: FastifyReply,
 ) {
   try {
+    const { category } = req.query as { category: string };
+
     const makeFindManyPosts = makeFindManyPostUseCase();
-    const posts = await makeFindManyPosts.execute();
+    const posts = await makeFindManyPosts.execute(category);
 
     return reply.status(200).send(posts);
   } catch (error) {

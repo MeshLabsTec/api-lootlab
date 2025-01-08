@@ -5,7 +5,7 @@ export interface IPostRepository {
   findById(id: string): Promise<Post | null>;
   findByTitle(title: string): Promise<Post | null>;
   findBySlug(slug: string): Promise<Post | null>;
-  findMany(): Promise<Post[]>;
+  findMany(category: string): Promise<Post[]>;
   updateById(
     id: string,
     data: Prisma.PostUncheckedUpdateManyInput,
