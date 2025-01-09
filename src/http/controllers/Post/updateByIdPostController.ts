@@ -18,7 +18,7 @@ export async function updateByIdPostController(
   try {
     const { id } = req.params as { id: string };
     const user = req.user;
-    console.log(user);
+
     const parts = req.parts();
     let postData: UpdatePostDTO | null = null;
     const imageFiles: MultipartFile[] = [];
@@ -50,6 +50,7 @@ export async function updateByIdPostController(
       });
     }
 
+    // Só processa e adiciona o campo Image se houver novos arquivos
     if (imageFiles.length > 0) {
       try {
         const uploadedImages = await Promise.all(
@@ -81,12 +82,12 @@ export async function updateByIdPostController(
           details: error.message,
         });
       }
+    } else {
+      delete postData.Image;
     }
 
-    const cleanPostData = postData;
-
     const updatePost = makeUpdateByIdPostUseCase();
-    const updatedPost = await updatePost.execute(id, cleanPostData);
+    const updatedPost = await updatePost.execute(id, postData);
 
     return reply.status(200).send(updatedPost);
   } catch (error) {

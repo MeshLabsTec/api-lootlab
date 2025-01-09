@@ -5,7 +5,7 @@ const LinkSchema = z.object({
 });
 
 const ProjectFeatureSchema = z.object({
-  title: z.string().min(1, "O título da feature é obrigatório").optional(),
+  title: z.string().optional(),
   isFeature: z.boolean().optional(),
 });
 

@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@prisma/client";
-import { PostNotFoundError } from "../@erros/Post/PostNotFoundError";
 import { deleteImageFromR2 } from "@/lib/cloudflare";
-import { generateSlug } from "@/utils/generateSlug";
+import { PostNotFoundError } from "../@erros/Post/PostNotFoundError";
+import type { PrismaClient } from "@prisma/client";
 import type { UpdatePostDTO } from "@/http/controllers/Post/interfaces/IUpdatePost";
+import { generateSlug } from "@/utils/generateSlug";
 
 export class PostUpdateUseCase {
   constructor(private prisma: PrismaClient) {}
@@ -163,8 +162,10 @@ export class PostUpdateUseCase {
           }
         }
 
+        // Nova lógica para atualização de imagens
         if (Image?.length) {
           try {
+            // Deleta imagens antigas apenas se novas imagens forem fornecidas
             if (post.Image.length > 0) {
               await Promise.all(
                 post.Image.map(async (oldImage) => {
@@ -173,6 +174,7 @@ export class PostUpdateUseCase {
               );
             }
 
+            // Atualiza com as novas imagens
             await tx.post.update({
               where: { id },
               data: {
@@ -189,6 +191,7 @@ export class PostUpdateUseCase {
           }
         }
 
+        // Retorna o post atualizado com todos os relacionamentos
         return await tx.post.findUnique({
           where: { id },
           include: {
