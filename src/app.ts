@@ -20,7 +20,11 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
-  origin: ["https://lootlab.xyz", "https://develop-lootlab.netlify.app"],
+  origin: [
+    "https://lootlab.xyz",
+    "https://develop-lootlab.netlify.app",
+    "http://localhost:3000",
+  ],
 });
 
 app.register(fastifySwagger, {
