@@ -7,6 +7,7 @@ import type { IGenreRepository } from "@/repositories/interfaceRepository/IGenre
 import { generateSlug } from "@/utils/generateSlug";
 import { TitleAlreadyExistError } from "../@erros/Post/TitleAlreadyExistError";
 import { UserNotFoundError } from "../@erros/User/UserNotFoundError";
+import { GenresRequiredError } from "../@erros/Post/GenresRequiredError";
 
 export class CreatePostUseCase {
   constructor(
@@ -28,26 +29,29 @@ export class CreatePostUseCase {
     }
 
     // Processar gêneros apenas se fornecidos
-    let genreRelations;
-    if (data.genres?.length) {
-      const genres = await this.genreRepository.findMany();
-
-      const existingGenres = genres.filter((genre) =>
-        data.genres?.some((dateGenres) => dateGenres.name === genre.name),
-      );
-
-      const newGenres = data.genres.filter(
-        (dateGenres) => !genres.some((genre) => genre.name === dateGenres.name),
-      );
-
-      const connectGenres = existingGenres.map((genre) => ({ id: genre.id }));
-      const createGenres = newGenres.map((genre) => ({ name: genre.name }));
-
-      genreRelations = {
-        connect: connectGenres.length > 0 ? connectGenres : undefined,
-        create: createGenres.length > 0 ? createGenres : undefined,
-      };
+    // Verificar se os gêneros foram fornecidos
+    if (!data.genres || data.genres.length === 0) {
+      throw new GenresRequiredError(); // Lançar erro caso não haja gêneros
     }
+
+    // Processar gêneros
+    const genres = await this.genreRepository.findMany();
+
+    const existingGenres = genres.filter((genre) =>
+      data.genres.some((dataGenre) => dataGenre.name === genre.name),
+    );
+
+    const newGenres = data.genres.filter(
+      (dataGenre) => !genres.some((genre) => genre.name === dataGenre.name),
+    );
+
+    const connectGenres = existingGenres.map((genre) => ({ id: genre.id }));
+    const createGenres = newGenres.map((genre) => ({ name: genre.name }));
+
+    const genreRelations = {
+      connect: connectGenres.length > 0 ? connectGenres : undefined,
+      create: createGenres.length > 0 ? createGenres : undefined,
+    };
 
     // Processar imagens apenas se fornecidas
     let images;
@@ -94,7 +98,6 @@ export class CreatePostUseCase {
     };
 
     const post = await this.postRepository.create(createPostInput);
-    console.log(post);
     return post;
   }
 }

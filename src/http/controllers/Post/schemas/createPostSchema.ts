@@ -24,7 +24,7 @@ const PartnershipSchema = z.object({
 });
 
 const Genre = z.object({
-  name: z.string().optional(),
+  name: z.string(),
 });
 
 export const createPostSchema = z.object({

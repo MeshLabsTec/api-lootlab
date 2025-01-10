@@ -46,7 +46,6 @@ export async function uploadImageToR2(
         `Falha ao fazer upload: ${response.$metadata.httpStatusCode}`,
       );
     }
-
     const publicUrl = `${env.CLOUDFLARE_PUBLIC_ENDPOINT}/${key}`;
     return publicUrl;
   } catch (error) {

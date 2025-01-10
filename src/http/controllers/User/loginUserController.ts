@@ -30,6 +30,9 @@ export async function loginUserController(
     if (error instanceof InvalidCredentialsError) {
       return reply.status(401).send({ error: error.message });
     }
-    return reply.status(500).send({ error: error.message });
+    console.log(error);
+    return reply.status(500).send({
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+    });
   }
 }

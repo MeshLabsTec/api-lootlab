@@ -13,6 +13,9 @@ export async function findManyPostsController(
 
     return reply.status(200).send(posts);
   } catch (error) {
-    return reply.status(500).send({ error: error.message });
+    console.log(error);
+    return reply.status(500).send({
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+    });
   }
 }

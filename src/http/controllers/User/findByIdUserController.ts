@@ -17,6 +17,9 @@ export async function findByIdUserController(
     if (error instanceof UserNotFoundError) {
       return reply.status(404).send({ error: error.message });
     }
-    return reply.status(500).send({ error: error.message });
+    console.log(error);
+    return reply.status(500).send({
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+    });
   }
 }

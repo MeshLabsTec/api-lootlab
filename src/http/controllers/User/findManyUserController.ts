@@ -11,6 +11,9 @@ export async function findManyUserController(
 
     return reply.status(200).send(users);
   } catch (error) {
-    return reply.status(500).send({ error: error.message });
+    console.log(error);
+    return reply.status(500).send({
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+    });
   }
 }
