@@ -102,9 +102,9 @@ export async function updateByIdPostController(
       });
     }
 
+    console.log(error);
     return reply.status(500).send({
-      error: "InternalServerError",
-      message: `Erro interno do servidor: ${error.message}`,
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
     });
   }
 }

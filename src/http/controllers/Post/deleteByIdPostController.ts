@@ -19,6 +19,9 @@ export async function deleteByIdPostController(
     if (error instanceof PostNotFoundError) {
       return reply.status(404).send({ message: error.message });
     }
-    return reply.status(500).send({ error: error.message });
+    console.log(error);
+    return reply.status(500).send({
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+    });
   }
 }

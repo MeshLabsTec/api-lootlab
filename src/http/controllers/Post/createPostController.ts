@@ -6,6 +6,7 @@ import { createPostSchema } from "./schemas/createPostSchema";
 import type { ICreatePost } from "@/useCases/interfaces/ICreatePost";
 import { UserNotFoundError } from "@/useCases/@erros/User/UserNotFoundError";
 import { TitleAlreadyExistError } from "@/useCases/@erros/Post/TitleAlreadyExistError";
+import { GenresRequiredError } from "@/useCases/@erros/Post/GenresRequiredError";
 
 export async function createPostController(
   req: FastifyRequest,
@@ -94,9 +95,12 @@ export async function createPostController(
       return reply.status(404).send({ message: error.message });
     } else if (error instanceof TitleAlreadyExistError) {
       return reply.status(400).send({ message: error.message });
+    } else if (error instanceof GenresRequiredError) {
+      return reply.status(400).send({ message: error.message });
     }
-    return reply
-      .status(500)
-      .send({ error: "Erro interno", message: error.message });
+    return reply.status(500).send({
+      error: "Erro interno no servidor. Por favor, tente novamente mais tarde.",
+      message: error.message,
+    });
   }
 }
