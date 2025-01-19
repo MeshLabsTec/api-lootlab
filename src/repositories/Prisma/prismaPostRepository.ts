@@ -5,7 +5,6 @@ import type { IPostRepository } from "../interfaceRepository/IPostRepository";
 export class PrismaPostRepository implements IPostRepository {
   async create(data: Prisma.PostUncheckedCreateInput) {
     const user = await prisma.post.create({ data });
-    console.log(user);
     return user;
   }
 
@@ -15,12 +14,6 @@ export class PrismaPostRepository implements IPostRepository {
         id,
       },
       include: {
-        links: true,
-        ProjectFeatures: true,
-        launchInfo: true,
-        partnerships: true,
-        Image: true,
-        genres: true,
         author: true,
       },
     });
@@ -33,12 +26,6 @@ export class PrismaPostRepository implements IPostRepository {
         title,
       },
       include: {
-        links: true,
-        ProjectFeatures: true,
-        launchInfo: true,
-        partnerships: true,
-        Image: true,
-        genres: true,
         author: true,
       },
     });
@@ -51,12 +38,6 @@ export class PrismaPostRepository implements IPostRepository {
         slug,
       },
       include: {
-        links: true,
-        ProjectFeatures: true,
-        launchInfo: true,
-        partnerships: true,
-        Image: true,
-        genres: true,
         author: true,
       },
     });
@@ -68,14 +49,6 @@ export class PrismaPostRepository implements IPostRepository {
 
     const posts = await prisma.post.findMany({
       where,
-      include: {
-        links: true,
-        ProjectFeatures: true,
-        launchInfo: true,
-        partnerships: true,
-        Image: true,
-        genres: true,
-      },
     });
     return posts;
   }
@@ -94,16 +67,6 @@ export class PrismaPostRepository implements IPostRepository {
     const post = await prisma.post.delete({
       where: {
         id,
-      },
-      include: {
-        links: true,
-        ProjectFeatures: true,
-        launchInfo: true,
-        partnerships: true,
-        Image: true,
-        genres: true,
-        likes: true,
-        comments: true,
       },
     });
     return post;

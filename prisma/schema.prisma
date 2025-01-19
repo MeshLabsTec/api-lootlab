@@ -21,90 +21,28 @@ model User {
 }
 
 model Post {
-  id                String            @id @default(uuid())
-  title             String            @db.VarChar(255)
-  category          String            @db.VarChar(255)
-  market_link       String?           @db.VarChar(255)
-  score             Int?              @default(0)
-  investment        String?           @db.VarChar(255)
-  token             String?           @db.VarChar(255)
-  network           String?           @db.VarChar(255)
-  comment_author    String?           @db.Text
-  slug              String            @unique
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  authorId          String?
-  launchInfoId      String?
-  projectFeaturesId String?
-  linkId            String?
-  comments          Comment[]         @relation("PostComments")
-  likes             Like[]            @relation("PostLikes")
-  links             Link[]            @relation("PostLinks")
-  partnerships      Partnership[]     @relation("PostPartnerships")
-  ProjectFeatures   ProjectFeatures[]
-  launchInfo        LaunchInfo?
-  Image             Image[]
-  genres            Genre[]           @relation("PostGenres")
-  author            User?             @relation("UserPosts", fields: [authorId], references: [id])
-}
-
-model Genre {
-  id    String  @id @default(uuid())
-  name  String? @unique
-  posts Post[]  @relation("PostGenres")
-}
-
-model ProjectFeatures {
-  id        String   @id @default(uuid())
-  title     String?  @db.VarChar(255)
-  isFeature Boolean?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  postId    String?
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-}
-
-model Link {
-  id        String    @id @default(uuid())
-  postId    String?
-  url       String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-  post      Post?     @relation("PostLinks", fields: [postId], references: [id], onDelete: Cascade)
-}
-
-model LaunchInfo {
-  id            String   @id @default(uuid())
-  launchDate    String?  @db.VarChar(255)
-  marketCap     Float?
-  currentSupply String?  @db.VarChar(255)
-  totalSupply   Float?
-  privateSale   Float?
-  publicSale    Float?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  postId        String?  @unique
-  post          Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
-}
-
-model Partnership {
-  id        String   @id @default(uuid())
-  type      String?  @db.VarChar(255)
-  link_url  String?  @db.VarChar(255)
-  post      Post?    @relation("PostPartnerships", fields: [postId], references: [id], onDelete: Cascade)
-  postId    String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Image {
-  id        String   @id @default(uuid())
-  url       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  postId    String?
-  post      Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  id              String    @id @default(uuid())
+  title           String    @db.VarChar(255)
+  category        String    @db.VarChar(255)
+  marketLink      String?   @db.VarChar(255)
+  score           Int?      @default(0)
+  investment      String?   @db.VarChar(255)
+  token           String?   @db.VarChar(255)
+  network         String?   @db.VarChar(255)
+  commentAuthor   String?   @db.Text
+  slug            String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  authorId        String?   @db.VarChar(255)
+  genres          String[] // Array de strings para armazenar os gêneros diretamente
+  launchInfo      Json? // Armazena informações de lançamento como um JSON
+  projectFeatures Json? // Armazena recursos do projeto como um JSON
+  links           Json? // Armazena links como um JSON
+  partnerships    Json? // Armazena parcerias como um JSON
+  images          String[] // URLs de imagens armazenadas como array de strings
+  comments        Comment[] @relation("PostComments")
+  likes           Like[]    @relation("PostLikes")
+  author          User?     @relation("UserPosts", fields: [authorId], references: [id])
 }
 
 model Comment {
