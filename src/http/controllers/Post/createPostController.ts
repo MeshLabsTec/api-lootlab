@@ -55,7 +55,7 @@ export async function createPostController(
       network: validatedData.network || null,
       commentAuthor: validatedData.commentAuthor || null,
       authorId: validatedData.authorId || null,
-      genres: validatedData.genres || [],
+      genres: validatedData.genres?.map((genre) => genre.name) || [],
       links:
         validatedData.links?.map((link) => ({
           url: link.url,

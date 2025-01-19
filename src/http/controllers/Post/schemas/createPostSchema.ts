@@ -13,10 +13,7 @@ const ProjectFeatureSchema = z.object({
 
 // Schema para informações de lançamento
 const LaunchInfoSchema = z.object({
-  launchDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Data de lançamento inválida")
-    .optional(),
+  launchDate: z.string().optional(),
   marketCap: z
     .number()
     .min(0, "MarketCap deve ser um valor positivo")
@@ -57,7 +54,13 @@ export const createPostSchema = z.object({
   authorId: z.string().optional(),
 
   // Arrays e objetos opcionais
-  genres: z.array(z.string()).optional(),
+  genres: z
+    .array(
+      z.object({
+        name: z.string(),
+      }),
+    )
+    .optional(),
   links: z.array(LinkSchema).optional(),
   projectFeatures: z.array(ProjectFeatureSchema).optional(),
   launchInfo: LaunchInfoSchema.optional(),
