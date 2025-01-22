@@ -42,7 +42,7 @@ const PartnershipSchema = z.object({
 // Schema principal para a criação do post
 export const createPostSchema = z.object({
   title: z.string().min(1, "O título é obrigatório"),
-  category: z.enum(["NFT Jogos", "NFT Artes"], {
+  category: z.enum(["NFT Jogos", "NFT Artes", "Crypto"], {
     message: "A categoria é inválida",
   }),
   marketLink: z.string().url("O link do mercado é inválido").optional(),
