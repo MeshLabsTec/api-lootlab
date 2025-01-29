@@ -1,7 +1,8 @@
+import { PrismaPostRepository } from "@/repositories/Prisma/prismaPostRepository";
 import { PostUpdateUseCase } from "@/useCases/Posts/updateByIdPostUseCase";
-import { PrismaClient } from "@prisma/client";
 
 export function makeUpdateByIdPostUseCase() {
-  const findManyPosts = new PostUpdateUseCase(new PrismaClient());
+  const prismaRepositoryPost = new PrismaPostRepository();
+  const findManyPosts = new PostUpdateUseCase(prismaRepositoryPost);
   return findManyPosts;
 }

@@ -2,18 +2,18 @@
 import { deleteImageFromR2 } from "@/lib/cloudflare";
 import { PostNotFoundError } from "../@erros/Post/PostNotFoundError";
 import type { IPostRepository } from "@/repositories/interfaceRepository/IPostRepository";
+import type { Post } from "@prisma/client";
 
 export class DeleteByIdUseCase {
   constructor(private postRepository: IPostRepository) {}
 
   async execute(id: string) {
-    const post = await this.postRepository.findById(id);
-    console.log(post);
+    const post: Post = await this.postRepository.findById(id);
     if (!post) {
       throw new PostNotFoundError();
     }
 
-    await deleteImageFromR2((post as any).Image[0].url);
+    await deleteImageFromR2(post.images[0]);
     const deleteById = await this.postRepository.deleteById(id);
 
     return deleteById;
