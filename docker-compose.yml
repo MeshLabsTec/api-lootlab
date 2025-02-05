@@ -13,7 +13,7 @@ services:
       - 3333:3333
     environment:
       - node=dev
-      - url=postgresql://docker:docker@localhost:5432/lootlab?schema=public
+      - url=postgresql://docker:docker@api-lootlab-postgresql:5432/lootlab?schema=public
     volumes:
       - ./:/src
     
