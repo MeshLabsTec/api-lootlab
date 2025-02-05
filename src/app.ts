@@ -21,6 +21,7 @@ app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
   origin: [
+    "https://production-lootlab.netlify.app/",
     "https://lootlab.xyz",
     "https://develop-lootlab.netlify.app",
     "http://localhost:3000",
