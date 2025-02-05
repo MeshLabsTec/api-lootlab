@@ -1,22 +1,6 @@
 version: '3.9'
 
-services:
-  app:
-    image: node:latest
-    tty: true
-    stdin_open: true
-    container_name: api-lootlab
-    working_dir: /src
-    depends_on:
-      - api-lootlab-postgresql
-    ports:
-      - 3333:3333
-    environment:
-      - node=dev
-      - url=postgresql://docker:docker@localhost:5432/lootlab?schema=public
-    volumes:
-      - ./:/src
-    
+services:    
   api-lootlab-postgresql:
     image: bitnami/postgresql
     ports:
