@@ -16,6 +16,8 @@ services:
       - url=postgresql://docker:docker@api-lootlab-postgresql:5432/lootlab?schema=public
     volumes:
       - ./:/src
+    command: >
+      sh -c "npm install && npx prisma migrate deploy && npm run start"
     
   api-lootlab-postgresql:
     image: bitnami/postgresql
