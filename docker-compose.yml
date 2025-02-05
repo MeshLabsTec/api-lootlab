@@ -6,22 +6,21 @@ services:
     tty: true
     stdin_open: true
     container_name: api-lootlab
+    restart: always
     working_dir: /src
     depends_on:
       - api-lootlab-postgresql
     ports:
       - 3333:3333
-    environment:
-      - node=dev
-      - url=postgresql://docker:docker@api-lootlab-postgresql:5432/lootlab?schema=public
-    volumes:
-      - ./:/src
+    env_file:
+      - .env
     
   api-lootlab-postgresql:
-    image: bitnami/postgresql
+    image: postgres
+    restart: always
     ports:
       - 5432:5432
-    environment:
-      - POSTGRESQL_USERNAME=docker
-      - POSTGRESQL_PASSWORD=docker
-      - POSTGRESQL_DATABASE=lootlab
+    env_file:
+      - .env
+    volumes:
+      - postgres-volume:var/lib/postgresql/data
