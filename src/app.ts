@@ -20,22 +20,10 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
-  origin: [
-    "https://production-lootlab.netlify.app",
-    "https://lootlab.xyz",
-    "https://develop-lootlab.netlify.app",
-    "http://localhost:3000",
-  ],
+  origin: "*", // Permite qualquer origem
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-});
-
-app.addHook("preHandler", async (req, reply) => {
-  reply.headers({
-    "Access-Control-Allow-Origin": req.headers.origin || "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  });
 });
 
 app.register(fastifySwagger, {
