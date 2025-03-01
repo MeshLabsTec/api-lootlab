@@ -23,7 +23,6 @@ app.setSerializerCompiler(serializerCompiler);
 app.register(cors, {
   origin: ["https://lootlab.xyz", "http://localhost:3000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true,
 });
 
 app.addHook("preHandler", async (req, reply) => {
