@@ -34,12 +34,12 @@ model Post {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   authorId        String?   @db.VarChar(255)
-  genres          String[] // Array de strings para armazenar os gêneros diretamente
-  launchInfo      Json? // Armazena informações de lançamento como um JSON
-  projectFeatures Json? // Armazena recursos do projeto como um JSON
-  links           Json? // Armazena links como um JSON
-  partnerships    Json? // Armazena parcerias como um JSON
-  images          String[] // URLs de imagens armazenadas como array de strings
+  genres          String[]
+  launchInfo      Json?
+  projectFeatures Json?
+  links           Json?
+  partnerships    Json?
+  images          String[]
   comments        Comment[] @relation("PostComments")
   likes           Like[]    @relation("PostLikes")
   author          User?     @relation("UserPosts", fields: [authorId], references: [id])
@@ -63,6 +63,17 @@ model Like {
   postId    String?
   user      User?    @relation("UserLikes", fields: [userId], references: [id])
   userId    String?
+}
+
+model CarouselImage {
+  id        String   @id @default(uuid())
+  title     String
+  filename  String
+  path      String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

@@ -54,13 +54,11 @@ export async function uploadImageToR2(
 }
 
 export async function deleteImageFromR2(url?: string): Promise<void> {
-  // Se não houver URL, retorna sem fazer nada
   if (!url) {
     return;
   }
 
   try {
-    // Verifica se a URL contém o endpoint público do Cloudflare
     if (!url.includes(env.CLOUDFLARE_PUBLIC_ENDPOINT)) {
       return;
     }
