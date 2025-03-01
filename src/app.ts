@@ -25,14 +25,6 @@ app.register(cors, {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 });
 
-app.addHook("preHandler", async (req, reply) => {
-  reply.headers({
-    "Access-Control-Allow-Origin": req.headers.origin || "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  });
-});
-
 app.register(fastifySwagger, {
   openapi: {
     info: {
