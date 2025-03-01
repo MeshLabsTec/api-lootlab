@@ -21,7 +21,8 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
-  origin: "*",
+  origin: "https://lootlab.xyz",
+  credentials: true,
 });
 
 app.register(fastifySwagger, {
