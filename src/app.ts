@@ -21,7 +21,7 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 
 app.register(cors, {
-  origin: "https://lootlab.xyz",
+  origin: ["https://lootlab.xyz", "http://localhost:3000"],
   credentials: true,
 });
 
