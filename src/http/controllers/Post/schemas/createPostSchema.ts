@@ -65,4 +65,12 @@ export const createPostSchema = z.object({
   projectFeatures: z.array(ProjectFeatureSchema).optional(),
   launchInfo: LaunchInfoSchema.optional(),
   partnerships: z.array(PartnershipSchema).optional(),
+  platform: z.array(z.string()).optional(),
+  network_secondary: z.array(z.string()).optional(),
+  status: z.enum(
+    ["DEVELOPMENT", "LIVE", "ALPHA", "BETA", "PRESALE", "CANCELL"],
+    {
+      message: "O status é inválido",
+    },
+  ),
 });

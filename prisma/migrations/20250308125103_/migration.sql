@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Post" ALTER COLUMN "network_secondary" SET DEFAULT ARRAY[]::VARCHAR(255)[],
+ALTER COLUMN "platform" SET DEFAULT ARRAY[]::VARCHAR(255)[];

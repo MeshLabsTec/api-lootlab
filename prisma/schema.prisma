@@ -21,28 +21,31 @@ model User {
 }
 
 model Post {
-  id              String    @id @default(uuid())
-  title           String    @db.VarChar(255)
-  category        String    @db.VarChar(255)
-  marketLink      String?   @db.VarChar(255)
-  score           Int?      @default(0)
-  investment      String?   @db.VarChar(255)
-  token           String?   @db.VarChar(255)
-  network         String?   @db.VarChar(255)
-  commentAuthor   String?   @db.Text
-  slug            String    @unique
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  authorId        String?   @db.VarChar(255)
-  genres          String[]
-  launchInfo      Json?
-  projectFeatures Json?
-  links           Json?
-  partnerships    Json?
-  images          String[]
-  comments        Comment[] @relation("PostComments")
-  likes           Like[]    @relation("PostLikes")
-  author          User?     @relation("UserPosts", fields: [authorId], references: [id])
+  id                String        @id @default(uuid())
+  title             String        @db.VarChar(255)
+  category          String        @db.VarChar(255)
+  marketLink        String?       @db.VarChar(255)
+  score             Int?          @default(0)
+  investment        String?       @db.VarChar(255)
+  token             String?       @db.VarChar(255)
+  network           String?       @db.VarChar(255)
+  network_secondary String[]      @default([]) @db.VarChar(255)
+  commentAuthor     String?       @db.Text
+  slug              String        @unique
+  status            PostStatusNew @default(DRAFT)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  authorId          String?       @db.VarChar(255)
+  genres            String[]
+  platform          String[]      @default([]) @db.VarChar(255)
+  launchInfo        Json?
+  projectFeatures   Json?
+  links             Json?
+  partnerships      Json?
+  images            String[]
+  comments          Comment[]     @relation("PostComments")
+  likes             Like[]        @relation("PostLikes")
+  author            User?         @relation("UserPosts", fields: [authorId], references: [id])
 }
 
 model Comment {
@@ -82,8 +85,12 @@ enum Role {
   USER
 }
 
-enum PostStatus {
+enum PostStatusNew {
   DRAFT
-  PUBLISHED
-  ARCHIVED
+  DEVELOPMENT
+  LIVE
+  ALPHA
+  BETA
+  PRESALE
+  CANCELL
 }

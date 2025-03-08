@@ -82,6 +82,9 @@ export async function createPostController(
         })) || [],
       images: [imageUrl],
       slug: generateSlug(validatedData.title),
+      status: validatedData.status,
+      platform: validatedData.platform || [],
+      network_secondary: validatedData.network_secondary || [],
     };
 
     await createPostUseCase.execute(postPayload);
