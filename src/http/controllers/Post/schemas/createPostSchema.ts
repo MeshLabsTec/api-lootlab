@@ -42,7 +42,7 @@ const PartnershipSchema = z.object({
 // Schema principal para a criação do post
 export const createPostSchema = z.object({
   title: z.string().min(1, "O título é obrigatório"),
-  category: z.enum(["NFT Jogos", "NFT Artes", "Crypto"], {
+  category: z.enum(["NFT Jogos", "NFT Artes", "Crypto", "AirDrop"], {
     message: "A categoria é inválida",
   }),
   marketLink: z.string().url("O link do mercado é inválido").optional(),
@@ -53,7 +53,6 @@ export const createPostSchema = z.object({
   commentAuthor: z.string().optional(),
   authorId: z.string().optional(),
 
-  // Arrays e objetos opcionais
   genres: z
     .array(
       z.object({
@@ -67,6 +66,7 @@ export const createPostSchema = z.object({
   partnerships: z.array(PartnershipSchema).optional(),
   platform: z.array(z.string()).optional(),
   network_secondary: z.array(z.string()).optional(),
+  airDrop: z.boolean().optional(),
   status: z.enum(
     ["DEVELOPMENT", "LIVE", "ALPHA", "BETA", "PRESALE", "CANCELL"],
     {
