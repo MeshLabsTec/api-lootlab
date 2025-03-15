@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Post" ADD COLUMN     "airDrop" BOOLEAN NOT NULL DEFAULT false,
+ALTER COLUMN "network_secondary" SET DEFAULT ARRAY[]::VARCHAR(255)[],
+ALTER COLUMN "platform" SET DEFAULT ARRAY[]::VARCHAR(255)[];

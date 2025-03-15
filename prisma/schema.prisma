@@ -32,6 +32,7 @@ model Post {
   network_secondary String[]      @default([]) @db.VarChar(255)
   commentAuthor     String?       @db.Text
   slug              String        @unique
+  airDrop           Boolean       @default(false)
   status            PostStatusNew @default(DRAFT)
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt

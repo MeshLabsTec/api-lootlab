@@ -81,6 +81,7 @@ export async function createPostController(
           link_url: partner.link_url || null,
         })) || [],
       images: [imageUrl],
+      airDrop: validatedData.airDrop || false,
       slug: generateSlug(validatedData.title),
       status: validatedData.status,
       platform: validatedData.platform || [],

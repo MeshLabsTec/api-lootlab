@@ -32,6 +32,7 @@ export function postRouter(app: FastifyTypedInstance) {
   );
   app.get("/v1/post", findManyPostsController);
   app.get("/v1/post/slug/:slug", findBySlugPostController);
+
   // PUT
   app.put(
     "/v1/post/:id",
