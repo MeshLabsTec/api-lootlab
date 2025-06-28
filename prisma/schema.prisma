@@ -18,6 +18,13 @@ model User {
   posts     Post[]    @relation("UserPosts")
   comments  Comment[] @relation("UserComments")
   likes     Like[]    @relation("UserLikes")
+
+  // Relacionamentos Battle Pass
+  battlePassProgress BattlePassProgress[]
+  userTasks          UserTask[]
+  userRewards        UserReward[]
+  userCodes          UserCode[]
+  reviews            Review[]
 }
 
 model Post {
@@ -47,6 +54,9 @@ model Post {
   comments          Comment[]     @relation("PostComments")
   likes             Like[]        @relation("PostLikes")
   author            User?         @relation("UserPosts", fields: [authorId], references: [id])
+
+  // Relacionamentos Battle Pass
+  reviews Review[]
 }
 
 model Comment {
@@ -70,7 +80,7 @@ model Like {
 }
 
 model CarouselImage {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   title     String
   filename  String
   path      String
@@ -79,6 +89,266 @@ model CarouselImage {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ===== BATTLE PASS SYSTEM - FASE 1 =====
+
+// Temporadas do Battle Pass - UM ÚNICO BATTLE PASS
+model BattlePassSeason {
+  id          String   @id @default(uuid())
+  name        String // "Temporada 1: Cyberpunk"
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean  @default(false)
+
+  // Configurações do Battle Pass
+  maxTier         Int      @default(100) // Tier máximo
+  xpPerTier       Int      @default(1000) // XP base por tier (fallback)
+  boostMultiplier Float    @default(1.0) // Multiplicador de XP para premium
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relacionamentos
+  tasks       Task[]
+  rewards     Reward[]
+  progress    BattlePassProgress[]
+  tierConfigs BattlePassTierConfig[]
+
+  @@map("battle_pass_seasons")
+}
+
+model BattlePassTierConfig {
+  id         String   @id @default(uuid())
+  seasonId   String
+  tier       Int // Número do tier (1, 2, 3, etc.)
+  requiredXp Int // XP necessário para este tier específico
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relacionamentos
+  season BattlePassSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([seasonId, tier])
+  @@map("battle_pass_tier_configs")
+}
+
+// Progresso do usuário por temporada
+model BattlePassProgress {
+  id                 String    @id @default(uuid())
+  userId             String
+  seasonId           String
+  currentXp          Int       @default(0)
+  currentTier        Int       @default(1)
+  isPremium          Boolean   @default(false) // Se o usuário tem Battle Pass Premium
+  premiumPurchasedAt DateTime? // Quando comprou o premium
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relacionamentos
+  user   User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  season BattlePassSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, seasonId])
+  @@map("battle_pass_progress")
+}
+
+// Tarefas disponíveis
+model Task {
+  id             String   @id @default(uuid())
+  seasonId       String
+  name           String // "Login Diário"
+  description    String
+  xpReward       Int // XP ganho ao completar
+  taskType       TaskType // DAILY, WEEKLY, UNIQUE, PROGRESSIVE
+  maxCompletions Int? // null = ilimitado, 1 = única vez
+  requirements   Json? // Requisitos específicos (ex: {"action": "comment", "count": 5})
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relacionamentos
+  season    BattlePassSeason @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  userTasks UserTask[]
+
+  @@map("tasks")
+}
+
+// Tarefas do usuário
+model UserTask {
+  id            String    @id @default(uuid())
+  userId        String
+  taskId        String
+  completions   Int       @default(0)
+  lastCompleted DateTime?
+  isCompleted   Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, taskId])
+  @@map("user_tasks")
+}
+
+// Recompensas disponíveis - GRATUITAS E PREMIUM NO MESMO BATTLE PASS
+model Reward {
+  id            String     @id @default(uuid())
+  seasonId      String
+  name          String // "Mystery Box Premium"
+  description   String
+  rewardType    RewardType
+  requiredXp    Int // XP necessário para desbloquear
+  tier          Int // Tier correspondente
+  imageUrl      String?
+  isActive      Boolean    @default(true)
+  isPremiumOnly Boolean    @default(false) // Recompensa exclusiva para usuários premium
+
+  // Campos de código
+  codePoolSize Int? // Quantidade de códigos disponíveis
+
+  // Campos Mystery Box
+  mysteryBoxRarity RarityType? // Raridade da caixa (se for Mystery Box)
+  mysteryBoxItems  Json? // Lista de itens possíveis na caixa
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  // Relacionamentos
+  season               BattlePassSeason      @relation(fields: [seasonId], references: [id], onDelete: Cascade)
+  userRewards          UserReward[]
+  rewardCodes          RewardCode[]
+  smartContractRewards SmartContractReward[]
+
+  @@map("rewards")
+}
+
+// Recompensas do usuário
+model UserReward {
+  id                 String    @id @default(cuid())
+  userId             String
+  rewardId           String
+  claimedAt          DateTime  @default(now())
+  isClaimed          Boolean   @default(true)
+  // Campos de código
+  codeId             String? // ID do código recebido
+  // Campos Mystery Box
+  mysteryBoxOpened   Boolean   @default(false) // Se a caixa foi aberta
+  mysteryBoxItem     Json? // Item recebido ao abrir a caixa
+  mysteryBoxOpenedAt DateTime? // Quando a caixa foi aberta
+  createdAt          DateTime  @default(now())
+
+  // Relacionamentos
+  user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reward Reward      @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  code   RewardCode? @relation(fields: [codeId], references: [id])
+
+  @@unique([userId, rewardId])
+  @@map("user_rewards")
+}
+
+// Códigos/Keys para recompensas
+model RewardCode {
+  id          String    @id @default(cuid())
+  rewardId    String
+  code        String    @unique // Código pré-existente (ex: "ABC123-DEF456-GHI789")
+  codeType    CodeType // STEAM_KEY, GIFT_CARD, PROMO_CODE, etc.
+  value       String // Valor do código (ex: "GAME123", "DISCOUNT20")
+  description String? // Descrição do que o código oferece
+  isAvailable Boolean   @default(true) // Se está disponível para distribuição
+  isUsed      Boolean   @default(false) // Se foi utilizado pelo usuário
+  usedAt      DateTime?
+  expiresAt   DateTime? // Data de expiração (opcional)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relacionamentos
+  reward     Reward       @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  userCode   UserCode?
+  UserReward UserReward[]
+
+  @@map("reward_codes")
+}
+
+// Códigos associados aos usuários
+model UserCode {
+  id        String   @id @default(uuid())
+  userId    String
+  codeId    String   @unique
+  claimedAt DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code RewardCode @relation(fields: [codeId], references: [id], onDelete: Cascade)
+
+  @@map("user_codes")
+}
+
+// Sistema de Reviews
+model Review {
+  id         String   @id @default(uuid())
+  userId     String
+  postId     String
+  rating     Float // 0.5 a 10.0
+  reviewText String? // Comentário detalhado da review
+  categories Json? // {"gameplay": 8, "design": 7, "replayability": 6, "fun": 9, "access": 8}
+  xpEarned   Int      @default(20) // XP ganho por review
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+  @@map("reviews")
+}
+
+// Recompensas de Smart Contract com Entrega Manual
+model SmartContractReward {
+  id              String                  @id @default(uuid())
+  rewardId        String
+  rewardType      SmartContractRewardType
+  contractAddress String? // Endereço do smart contract
+  tokenId         String? // Token ID (para NFTs)
+  amount          String? // Quantidade (para tokens)
+  metadata        Json? // Metadados específicos
+  deliveryStatus  DeliveryStatus          @default(PENDING)
+  claimedAt       DateTime                @default(now())
+  deliveredAt     DateTime?
+  transactionHash String? // Hash da transação de entrega
+  deliveredBy     String? // ID do admin que fez a entrega
+  notes           String? // Notas da equipe
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  // Relacionamentos
+  reward     Reward                  @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+  deliveries SmartContractDelivery[]
+
+  @@map("smart_contract_rewards")
+}
+
+model SmartContractDelivery {
+  id              String         @id @default(uuid())
+  rewardId        String
+  adminId         String // ID do admin que fez a entrega
+  deliveryMethod  DeliveryMethod
+  transactionHash String?
+  blockNumber     Int?
+  gasUsed         String?
+  notes           String?
+  deliveredAt     DateTime       @default(now())
+  createdAt       DateTime       @default(now())
+
+  // Relacionamentos
+  reward SmartContractReward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+
+  @@map("smart_contract_deliveries")
+}
+
+// ===== ENUMS EXISTENTES =====
 
 enum Role {
   ADMIN
@@ -94,4 +364,80 @@ enum PostStatusNew {
   BETA
   PRESALE
   CANCELL
+}
+
+// ===== ENUMS BATTLE PASS =====
+
+enum TaskType {
+  DAILY
+  WEEKLY
+  UNIQUE
+  PROGRESSIVE
+}
+
+enum RewardType {
+  MYSTERY_BOX
+  XP_BOOST
+  SKIN
+  WEAPON
+  EMOTE
+  STICKER
+  BADGE
+  KEY_CODE
+  GAME_ITEM
+  CURRENCY
+  // Smart Contract Rewards
+  TOKEN
+  NFT_CHARACTER
+  NFT_WEAPON
+  NFT_ACCESSORY
+  NFT_BADGE
+  NFT_MYSTERY_BOX
+  NFT_BREEDING_RIGHTS
+  WHITELIST_SPOT
+  BETA_ACCESS
+}
+
+enum CodeType {
+  STEAM_KEY
+  GIFT_CARD
+  PROMO_CODE
+  REDEEM_CODE
+  BETA_ACCESS
+  CUSTOM_CODE
+}
+
+enum RarityType {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+}
+
+enum SmartContractRewardType {
+  TOKEN
+  NFT_CHARACTER
+  NFT_WEAPON
+  NFT_ACCESSORY
+  NFT_BADGE
+  NFT_MYSTERY_BOX
+  NFT_BREEDING_RIGHTS
+  WHITELIST_SPOT
+  BETA_ACCESS
+}
+
+enum DeliveryStatus {
+  PENDING
+  APPROVED
+  DELIVERED
+  FAILED
+  CANCELLED
+}
+
+enum DeliveryMethod {
+  MANUAL_MINT
+  AIRDROP
+  TRANSFER
+  BATCH_DELIVERY
 }

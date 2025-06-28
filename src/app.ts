@@ -14,6 +14,7 @@ import {
 import fastifySwagger from "@fastify/swagger";
 import fastifySwaggerUi from "@fastify/swagger-ui";
 import { carouselRouter } from "./http/controllers/Carousel/routes";
+import { taskRouter } from "./http/controllers/Task/routes";
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>();
 
@@ -47,3 +48,4 @@ app.register(fastifyMultipart, { limits: { fileSize: 50 * 1024 * 1024 } });
 app.register(userRouter);
 app.register(postRouter);
 app.register(carouselRouter);
+app.register(taskRouter);
