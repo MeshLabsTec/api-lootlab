@@ -17,14 +17,14 @@ import { carouselRouter } from "./http/controllers/Carousel/routes";
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>();
 
-app.setValidatorCompiler(validatorCompiler);
-app.setSerializerCompiler(serializerCompiler);
-
 app.register(cors, {
   origin: "*",
   credentials: false,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
 });
+
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
 
 app.register(fastifySwagger, {
   openapi: {
