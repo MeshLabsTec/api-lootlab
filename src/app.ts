@@ -17,14 +17,13 @@ import { carouselRouter } from "./http/controllers/Carousel/routes";
 
 export const app = fastify().withTypeProvider<ZodTypeProvider>();
 
-app.register(cors, {
-  origin: "*",
-  credentials: false,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
-});
-
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+app.register(cors, {
+  origin: ["https://lootlab.xyz", "https://bright-taffy-598d3b.netlify.app", "http://localhost:3000"],
+  credentials: true,
+});
 
 app.register(fastifySwagger, {
   openapi: {
